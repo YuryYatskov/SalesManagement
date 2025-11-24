@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using SMApp.Components;
+using SMApp.Data;
 using Syncfusion.Blazor;
 using Syncfusion.Licensing;
 
@@ -10,6 +12,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddSyncfusionBlazor();
+
+builder.Services.AddDbContext<SalesManagementDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
 var app = builder.Build();
 

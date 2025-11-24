@@ -1,0 +1,18 @@
+﻿using Microsoft.EntityFrameworkCore;
+using SMApp.Data.Entities;
+
+namespace SMApp.Data;
+
+public class SalesManagementDbContext(DbContextOptions<SalesManagementDbContext> options) : DbContext(options)
+{
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        SeedData.AddEmployeeData(modelBuilder);
+    }
+
+    public DbSet<Employee> Employees { get; set; }
+
+    public DbSet<EmployeeJobTitle> EmployeeJobTitles { get; set; }
+}
