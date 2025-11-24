@@ -1,4 +1,4 @@
-﻿@page "/employeeManagment"
+﻿@page "/employee-managment"
 @using SMApp.Models
 @using Syncfusion.Blazor.Grids
 @rendermode InteractiveServer
@@ -7,10 +7,11 @@
 
 <div style="max-width:900px">
     <SfGrid DataSource="@employeeData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowGrouping="true" Toolbar="@toolbar">
+        <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"></GridEditSettings>
         <GridPageSettings PageSize="5"></GridPageSettings>
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
         <GridColumns>
-            <GridColumn Field="@nameof(EmployeeModel.Id)" Width="50px"></GridColumn>
+            <GridColumn Field="@nameof(EmployeeModel.Id)" IsPrimaryKey="true" Width="50px"></GridColumn>
             <GridColumn Field="@nameof(EmployeeModel.FirstName)" HeaderText="First name"></GridColumn>
             <GridColumn Field="@nameof(EmployeeModel.LastName)" HeaderText="Last name"></GridColumn>
             <GridColumn Field="@nameof(EmployeeModel.Gender)"></GridColumn>
@@ -22,7 +23,7 @@
 
 @code {
     private List<EmployeeModel>? employeeData = null;
-    private List<object> toolbar = new List<object> { "Search" };
+    private List<object> toolbar = new List<object> { "Add", "Edit", "Delete", "Update", "Cancel", "Search" };
 
     protected override void OnInitialized()
     {
