@@ -1,7 +1,9 @@
 ﻿@page "/employee-managment"
+@using SMApp.Data.Entities
 @using SMApp.Models
 @using SMApp.Services.Contracts
 @using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.DropDowns
 @rendermode InteractiveServer
 @inject IEmployeeManagementService EmployeeManagementService
 
@@ -9,15 +11,35 @@
 
 <div style="max-width:900px">
     <SfGrid DataSource="@employeeData"> @*  AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowGrouping="true" Toolbar="@toolbar"> *@
-@*         <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"></GridEditSettings>
+        <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"></GridEditSettings>
+@*        
         <GridPageSettings PageSize="5"></GridPageSettings>
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings> *@
         <GridColumns>
             <GridColumn Field="@nameof(EmployeeModel.Id)" IsPrimaryKey="true" Width="50px"></GridColumn>
             <GridColumn Field="@nameof(EmployeeModel.FirstName)" HeaderText="First name"></GridColumn>
             <GridColumn Field="@nameof(EmployeeModel.LastName)" HeaderText="Last name"></GridColumn>
-            <GridColumn Field="@nameof(EmployeeModel.EmployeeJobTitleId)" HeaderText="Designation"></GridColumn>
-            <GridColumn Field="@nameof(EmployeeModel.Gender)"></GridColumn>
+@*             <GridColumn Field="@nameof(EmployeeModel.EmployeeJobTitleId)" HeaderText="Designation"></GridColumn> *@
+            <GridForeignColumn HeaderText="Designation" TValue="EmployeeJobTitle"
+                               Field="@nameof(EmployeeModel.EmployeeJobTitleId)"
+                               ForeignDataSource="employeeJobTitleData"
+                               ForeignKeyValue="Name" Width="100px">
+                <EditTemplate>
+                    <SfDropDownList @bind-value="@((context as EmployeeModel).EmployeeJobTitleId)"
+                                    ID="EmployeeJobTitleId"
+                                    DataSource="employeeJobTitleData" TItem="EmployeeJobTitle"
+                                    TValue="int">
+                        <DropDownListFieldSettings Text="Name" Value="EmployeeJobTitleId">
+                        </DropDownListFieldSettings>
+                    </SfDropDownList>
+                </EditTemplate>
+            </GridForeignColumn>
+            <GridColumn Field="@nameof(EmployeeModel.Gender)">
+                <EditTemplate>
+                    <SfDropDownList DataSource="genderCollection" TItem="string" TValue="string"
+                        @bind-value="@((context as EmployeeModel).Gender)"></SfDropDownList>
+                </EditTemplate>
+            </GridColumn>
             <GridColumn Field="@nameof(EmployeeModel.DateOfBirth)" Format="d" HeaderText="DOB"></GridColumn>
             <GridColumn Field="@nameof(EmployeeModel.ReportToEmpId)" HeaderText="Reports" Width="100px"></GridColumn>
         </GridColumns>
@@ -25,11 +47,21 @@
 </div>
 
 @code {
-    private List<EmployeeModel>? employeeData = null;
+    private List<EmployeeModel>? employeeData;
+    private List<EmployeeJobTitle>? employeeJobTitleData;
+    private string[] genderCollection = Enum.GetNames(typeof(GenderVal));
     // private List<object> toolbar = new List<object> { "Add", "Edit", "Delete", "Update", "Cancel", "Search" };
 
     protected override async Task OnInitializedAsync()
     {
         employeeData = await EmployeeManagementService.GetEmployees();
+        employeeJobTitleData = await EmployeeManagementService.GetJobTitles();
+    }
+
+    private enum GenderVal
+    {        
+        Male,
+        Female,
+        Other
     }
 }
