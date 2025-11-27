@@ -5,6 +5,7 @@
 @using SMApp.Services.Contracts
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Spinner
 @rendermode InteractiveServer
 @inject IEmployeeManagementService EmployeeManagementService
 
@@ -18,6 +19,16 @@
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings> *@
         <GridColumns>
             <GridColumn Field="@nameof(EmployeeModel.Id)" IsPrimaryKey="true" Width="50px"></GridColumn>
+            <GridColumn HeaderText="Profile" Width="120px">
+                <Template>
+                    @{
+                        var employee = (context as EmployeeModel);
+                        <div class="profile-image-container">
+                            <img src="@(employee?.ImagePath)" />
+                        </div>
+                    }
+                </Template>
+            </GridColumn>
             <GridColumn Field="@nameof(EmployeeModel.FirstName)" HeaderText="First name"></GridColumn>
             <GridColumn Field="@nameof(EmployeeModel.LastName)" HeaderText="Last name"></GridColumn>
 @*             <GridColumn Field="@nameof(EmployeeModel.EmployeeJobTitleId)" HeaderText="Designation"></GridColumn> *@
@@ -59,8 +70,22 @@
                 </EditTemplate>
             </GridForeignColumn>
         </GridColumns>
+        <SfSpinner @bind-Visible="@VisibleProp"></SfSpinner>
     </SfGrid>
 </div>
+
+<style>
+    .profile-image-container {
+        width: 80px;
+        height: 80px;
+    }
+
+    .profile-image-container img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50px;
+    }
+</style>
 
 @code {
     private List<EmployeeModel>? employeeData;
@@ -69,12 +94,18 @@
     // private List<object> toolbar = new List<object> { "Add", "Edit", "Delete", "Update", "Cancel", "Search" };
 
     private List<ReportToModel>? reportToEmployeeData;
+    private bool VisibleProp {get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        VisibleProp = true;
         employeeData = await EmployeeManagementService.GetEmployees();
         employeeJobTitleData = await EmployeeManagementService.GetJobTitles();
         reportToEmployeeData = await EmployeeManagementService.GetReportToEmployees();
+
+        // await Task.Delay(2000);
+
+        VisibleProp = false;
     }
 
     private enum GenderVal
