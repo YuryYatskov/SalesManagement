@@ -51,7 +51,9 @@ public class EmployeeManagementService(SalesManagementDbContext _dbContext) : IE
                     })
                 .ToListAsync();
 
-            return employees;
+            employees.Add(new ReportToModel { ReportToEmpId = null, ReportToName = "<None>" });
+
+            return [.. employees.OrderBy(x => x.ReportToEmpId)];
         }
         catch (Exception)
         {

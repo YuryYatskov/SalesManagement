@@ -42,7 +42,7 @@
                 </EditTemplate>
             </GridColumn>
             <GridColumn Field="@nameof(EmployeeModel.DateOfBirth)" Format="d" HeaderText="DOB"></GridColumn>
-            <GridColumn Field="@nameof(EmployeeModel.ReportToEmpId)" HeaderText="Reports" Width="100px"></GridColumn>
+@*             <GridColumn Field="@nameof(EmployeeModel.ReportToEmpId)" HeaderText="Reports" Width="100px"></GridColumn> *@
             <GridForeignColumn HeaderText="Reports To" TValue="ReportToModel"
                                Field="@nameof(EmployeeModel.ReportToEmpId)"
                                ForeignDataSource="reportToEmployeeData"
