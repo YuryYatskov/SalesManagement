@@ -60,4 +60,22 @@ public class EmployeeManagementService(SalesManagementDbContext _dbContext) : IE
             throw;
         }
     }
+
+    public async Task<Employee> AddEmployee(EmployeeModel employeeModel)
+    {
+        try
+        {
+            Employee employeeToAdd = employeeModel.Convert();
+
+            var result = await _dbContext.Employees.AddAsync(employeeToAdd);
+
+            await _dbContext.SaveChangesAsync();
+
+            return result.Entity;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
 }

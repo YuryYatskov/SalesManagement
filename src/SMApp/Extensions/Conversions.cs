@@ -20,4 +20,19 @@ public static class Conversions
             EmployeeJobTitleId = x.EmployeeJobTitleId
         }).ToListAsync();
     }
+
+    public static Employee Convert(this EmployeeModel employeeModel)
+    {
+        return new Employee
+        {
+            FirstName = employeeModel.FirstName,
+            LastName = employeeModel.LastName,
+            Email = employeeModel.Email,
+            DateOfBirth = employeeModel.DateOfBirth,
+            Gender = employeeModel.Gender,
+            ImagePath = employeeModel.Gender.ToUpper() == "MALE" ? "/Images/Profile/MaleDefault.jpg" : "/Images/Profile/FemaleDefault.jpg",
+            EmployeeJobTitleId = employeeModel.EmployeeJobTitleId,
+            ReportToEmpId = employeeModel.ReportToEmpId
+        };
+    }
 }

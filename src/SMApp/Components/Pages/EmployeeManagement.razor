@@ -11,14 +11,16 @@
 
 <h3>Employee management</h3>
 
-<div style="max-width:900px">
-    <SfGrid DataSource="@employeeData"> @*  AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowGrouping="true" Toolbar="@toolbar"> *@
+<div style="max-width:1100px">
+    <SfGrid @ref="EmployeeGrid" DataSource="@employeeData" AllowSorting="true" Toolbar="@toolbar">
+        @*  AllowFiltering="true" AllowPaging="true" AllowGrouping="true" > *@
         <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"></GridEditSettings>
-@*        
+        <GridEvents OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" TValue="EmployeeModel"></GridEvents>
+        @*
         <GridPageSettings PageSize="5"></GridPageSettings>
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings> *@
         <GridColumns>
-            <GridColumn Field="@nameof(EmployeeModel.Id)" IsPrimaryKey="true" Width="50px"></GridColumn>
+            <GridColumn Field="@nameof(EmployeeModel.Id)" AllowAdding="false" IsPrimaryKey="true" Width="50px"></GridColumn>
             <GridColumn HeaderText="Profile" Width="120px">
                 <Template>
                     @{
@@ -29,8 +31,8 @@
                     }
                 </Template>
             </GridColumn>
-            <GridColumn Field="@nameof(EmployeeModel.FirstName)" HeaderText="First name"></GridColumn>
-            <GridColumn Field="@nameof(EmployeeModel.LastName)" HeaderText="Last name"></GridColumn>
+            <GridColumn Field="@nameof(EmployeeModel.FirstName)" HeaderText="First name" Width="120px"></GridColumn>
+            <GridColumn Field="@nameof(EmployeeModel.LastName)" HeaderText="Last name" Width="120px"></GridColumn>
 @*             <GridColumn Field="@nameof(EmployeeModel.EmployeeJobTitleId)" HeaderText="Designation"></GridColumn> *@
             <GridForeignColumn HeaderText="Designation" TValue="EmployeeJobTitle"
                                Field="@nameof(EmployeeModel.EmployeeJobTitleId)"
@@ -52,6 +54,7 @@
                         @bind-value="@((context as EmployeeModel).Gender)"></SfDropDownList>
                 </EditTemplate>
             </GridColumn>
+            <GridColumn Field="@nameof(EmployeeModel.Email)" Width="170px"></GridColumn>
             <GridColumn Field="@nameof(EmployeeModel.DateOfBirth)" Format="d" HeaderText="DOB"></GridColumn>
 @*             <GridColumn Field="@nameof(EmployeeModel.ReportToEmpId)" HeaderText="Reports" Width="100px"></GridColumn> *@
             <GridForeignColumn HeaderText="Reports To" TValue="ReportToModel"
@@ -88,10 +91,11 @@
 </style>
 
 @code {
+    private SfGrid<EmployeeModel>? EmployeeGrid { get; set; }
     private List<EmployeeModel>? employeeData;
     private List<EmployeeJobTitle>? employeeJobTitleData;
     private string[] genderCollection = Enum.GetNames(typeof(GenderVal));
-    // private List<object> toolbar = new List<object> { "Add", "Edit", "Delete", "Update", "Cancel", "Search" };
+    private List<object> toolbar = new List<object> { "Add", "Edit", "Delete", "Update", "Cancel", "Search" };
 
     private List<ReportToModel>? reportToEmployeeData;
     private bool VisibleProp {get; set; }
@@ -106,6 +110,26 @@
         // await Task.Delay(2000);
 
         VisibleProp = false;
+    }
+
+    public async void ActionBeginHandler(ActionEventArgs<EmployeeModel> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        {
+            if (args.Action == "Add")
+            {
+                await EmployeeManagementService.AddEmployee(args.Data);
+                EmployeeGrid?.Refresh();
+            }
+        }
+    }
+
+    public async void ActionCompleteHandler(ActionEventArgs<EmployeeModel> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        {
+            employeeData = await EmployeeManagementService.GetEmployees();
+        }
     }
 
     private enum GenderVal
