@@ -5,6 +5,7 @@ using SMApp.Extensions;
 using SMApp.Models;
 using SMApp.Models.Reports;
 using SMApp.Services.Contracts;
+using System.Reflection;
 
 namespace SMApp.Services;
 
@@ -72,6 +73,51 @@ public class EmployeeManagementService(SalesManagementDbContext _dbContext) : IE
             await _dbContext.SaveChangesAsync();
 
             return result.Entity;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    public async Task UpdateEmployee(EmployeeModel employeeModel)
+    {
+        try
+        {
+            var employeeToUpdate = await _dbContext.Employees.FindAsync(employeeModel.Id);
+
+            if (employeeToUpdate != null)
+            {
+                employeeToUpdate.FirstName = employeeModel.FirstName;
+                employeeToUpdate.LastName = employeeModel.LastName;
+                employeeToUpdate.Email = employeeModel.Email;
+                employeeToUpdate.Gender = employeeModel.Gender;
+                employeeToUpdate.DateOfBirth = employeeModel.DateOfBirth;
+                employeeToUpdate.ImagePath = employeeModel.ImagePath;
+                employeeToUpdate.ReportToEmpId = employeeModel.ReportToEmpId;
+                employeeToUpdate.EmployeeJobTitleId = employeeModel.EmployeeJobTitleId;
+
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+        catch (Exception) 
+        {
+            throw;
+        }
+    }
+
+    public async Task DeleteEmployee(int id)
+    {
+        try
+        {
+            var employeeToDelete = await _dbContext.Employees.FindAsync(id);
+
+            if (employeeToDelete != null)
+            {
+                _dbContext.Employees.Remove(employeeToDelete);
+
+                await _dbContext.SaveChangesAsync();
+            }
         }
         catch (Exception)
         {

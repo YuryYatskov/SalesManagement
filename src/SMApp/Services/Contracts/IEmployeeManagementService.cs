@@ -12,5 +12,9 @@ public interface IEmployeeManagementService
 
     Task<List<ReportToModel>> GetReportToEmployees();
 
-    Task<Employee> AddEmployee(EmployeeModel employee);
+    Task<Employee> AddEmployee(EmployeeModel employeeModel);
+
+    Task UpdateEmployee(EmployeeModel employeeModel);
+
+    Task DeleteEmployee(int id);
 }

@@ -16,11 +16,16 @@
         @*  AllowFiltering="true" AllowPaging="true" AllowGrouping="true" > *@
         <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"></GridEditSettings>
         <GridEvents OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" TValue="EmployeeModel"></GridEvents>
+        <GridSortSettings>
+            <GridSortColumns>
+                <GridSortColumn Field="Id" Direction="SortDirection.Descending"></GridSortColumn>
+            </GridSortColumns>
+        </GridSortSettings>
         @*
         <GridPageSettings PageSize="5"></GridPageSettings>
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings> *@
         <GridColumns>
-            <GridColumn Field="@nameof(EmployeeModel.Id)" AllowAdding="false" IsPrimaryKey="true" Width="50px"></GridColumn>
+            <GridColumn Field="@nameof(EmployeeModel.Id)" AllowAdding="false" IsPrimaryKey="true" Width="50px" ></GridColumn>
             <GridColumn HeaderText="Profile" Width="120px">
                 <Template>
                     @{
@@ -119,8 +124,15 @@
             if (args.Action == "Add")
             {
                 await EmployeeManagementService.AddEmployee(args.Data);
-                EmployeeGrid?.Refresh();
             }
+            else if (args.Action == "Edit")
+            {
+                await EmployeeManagementService.UpdateEmployee(args.Data);
+            }
+        }
+        else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            await EmployeeManagementService.DeleteEmployee(args.Data.Id);
         }
     }
 
@@ -128,7 +140,11 @@
     {
         if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
         {
-            employeeData = await EmployeeManagementService.GetEmployees();
+            if (args.Action == "Add")
+            {
+                employeeData = await EmployeeManagementService.GetEmployees();
+                EmployeeGrid?.Refresh();
+            }
         }
     }
 
