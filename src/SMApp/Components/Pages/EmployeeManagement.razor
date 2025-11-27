@@ -1,6 +1,7 @@
 ﻿@page "/employee-managment"
 @using SMApp.Data.Entities
 @using SMApp.Models
+@using SMApp.Models.Reports
 @using SMApp.Services.Contracts
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.DropDowns
@@ -42,6 +43,21 @@
             </GridColumn>
             <GridColumn Field="@nameof(EmployeeModel.DateOfBirth)" Format="d" HeaderText="DOB"></GridColumn>
             <GridColumn Field="@nameof(EmployeeModel.ReportToEmpId)" HeaderText="Reports" Width="100px"></GridColumn>
+            <GridForeignColumn HeaderText="Reports To" TValue="ReportToModel"
+                               Field="@nameof(EmployeeModel.ReportToEmpId)"
+                               ForeignDataSource="reportToEmployeeData"
+                               ForeignKeyValue="ReportToName" Width="130px">
+                <EditTemplate>
+                    <SfDropDownList @bind-value="@((context as EmployeeModel).ReportToEmpId)"
+                                    ID="ReportToEmpId"
+                                    DataSource="reportToEmployeeData" TItem="ReportToModel"
+                                    TValue="Nullable<int>">
+                        <DropDownListFieldSettings Text="ReportToName" Value="ReportToEmpId">
+                        </DropDownListFieldSettings>
+
+                    </SfDropDownList>
+                </EditTemplate>
+            </GridForeignColumn>
         </GridColumns>
     </SfGrid>
 </div>
@@ -52,10 +68,13 @@
     private string[] genderCollection = Enum.GetNames(typeof(GenderVal));
     // private List<object> toolbar = new List<object> { "Add", "Edit", "Delete", "Update", "Cancel", "Search" };
 
+    private List<ReportToModel>? reportToEmployeeData;
+
     protected override async Task OnInitializedAsync()
     {
         employeeData = await EmployeeManagementService.GetEmployees();
         employeeJobTitleData = await EmployeeManagementService.GetJobTitles();
+        reportToEmployeeData = await EmployeeManagementService.GetReportToEmployees();
     }
 
     private enum GenderVal
