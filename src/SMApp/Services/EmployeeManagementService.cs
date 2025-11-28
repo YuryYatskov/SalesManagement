@@ -88,9 +88,9 @@ public class EmployeeManagementService(SalesManagementDbContext _dbContext) : IE
 
             if (employeeToUpdate != null)
             {
-                employeeToUpdate.FirstName = employeeModel.FirstName;
-                employeeToUpdate.LastName = employeeModel.LastName;
-                employeeToUpdate.Email = employeeModel.Email;
+                employeeToUpdate.FirstName = employeeModel.FirstName.Trim();
+                employeeToUpdate.LastName = employeeModel.LastName.Trim();
+                employeeToUpdate.Email = employeeModel.Email.Trim();
                 employeeToUpdate.Gender = employeeModel.Gender;
                 employeeToUpdate.DateOfBirth = employeeModel.DateOfBirth;
                 employeeToUpdate.ImagePath = employeeModel.ImagePath;

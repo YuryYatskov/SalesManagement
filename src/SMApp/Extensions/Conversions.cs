@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SMApp.Data.Entities;
 using SMApp.Models;
+using System;
 
 namespace SMApp.Extensions;
 
@@ -25,9 +26,9 @@ public static class Conversions
     {
         return new Employee
         {
-            FirstName = employeeModel.FirstName,
-            LastName = employeeModel.LastName,
-            Email = employeeModel.Email,
+            FirstName = employeeModel.FirstName.Trim(),
+            LastName = employeeModel.LastName.Trim(),
+            Email = employeeModel.Email.Trim(),
             DateOfBirth = employeeModel.DateOfBirth,
             Gender = employeeModel.Gender,
             ImagePath = employeeModel.Gender.ToUpper() == "MALE" ? "/Images/Profile/MaleDefault.jpg" : "/Images/Profile/FemaleDefault.jpg",
