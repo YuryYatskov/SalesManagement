@@ -19,6 +19,7 @@ builder.Services.AddDbContext<SalesManagementDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.AddScoped<IEmployeeManagementService, EmployeeManagementService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
 

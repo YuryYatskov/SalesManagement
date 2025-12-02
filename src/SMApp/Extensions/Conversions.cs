@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SMApp.Data;
 using SMApp.Data.Entities;
 using SMApp.Models;
 using System;
@@ -35,5 +36,24 @@ public static class Conversions
             EmployeeJobTitleId = employeeModel.EmployeeJobTitleId,
             ReportToEmpId = employeeModel.ReportToEmpId
         };
+    }
+
+    public static async Task<List<ProductModel>> Convert(this IQueryable<Product> products, SalesManagementDbContext _dbContext)
+    {
+        return await products
+          .Join(_dbContext.ProductCategories,
+              x => x.CategoryId,
+              y => y.Id,
+              (x, y) => new ProductModel
+              {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+                ImagePath = x.ImagePath,
+                Price = x.Price,
+                CategoryId = x.CategoryId,
+                CategoryName = y.Name
+              })
+          .ToListAsync();
     }
 }
