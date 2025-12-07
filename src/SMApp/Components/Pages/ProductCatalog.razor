@@ -3,11 +3,21 @@
 @using SMApp.Services.Contracts
 @using Syncfusion.Blazor.Lists
 @using System.Globalization
+@using Syncfusion.Blazor.DropDowns
 @inject IProductService ProductService;
+@inject IClientService ClientService;
 
 <h3>Product catalog</h3>
 
 <div class="row mt-1">
+    <div class="row mt-3">
+        <div class="col-12">
+            <SfComboBox CssClass="client-combo" DataSource="ClientData" TValue="int" TItem="ClientModel"
+                        @bind-Value="ClientId">
+                <ComboBoxFieldSettings Text="RetailOutletName" Value="Id"></ComboBoxFieldSettings>
+            </SfComboBox>
+        </div>
+    </div>
     <div class="col-12">
         <SfListView ShowCheckBox="true" DataSource="ProductData" CssClass="e-list-template listview-template">
             <ListViewFieldSettings TValue="ProductModel" Id="Id" Text="Name"
@@ -110,10 +120,12 @@
 
 @code {
     private List<ProductModel>? ProductData { get; set; }
-
+    private List<ClientModel>? ClientData { get; set; }
+    private int ClientId { get; set; } = 1;
 
     protected override async Task OnInitializedAsync() 
     {
         ProductData = await ProductService.GetProducts();
+        ClientData = await ClientService.GetCliants();
     }
 }

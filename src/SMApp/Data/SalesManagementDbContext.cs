@@ -12,6 +12,8 @@ public class SalesManagementDbContext(DbContextOptions<SalesManagementDbContext>
         SeedData.AddEmployeeData(modelBuilder);
 
         SeedData.AddProductData(modelBuilder);
+
+        SeedData.AddClientData(modelBuilder);
     }
 
     public DbSet<Employee> Employees { get; set; }
@@ -21,4 +23,8 @@ public class SalesManagementDbContext(DbContextOptions<SalesManagementDbContext>
     public DbSet<Product> Products { get; set; }
 
     public DbSet<ProductCategory> ProductCategories { get; set; }
+
+    public DbSet<Client> Clients { get; set; }
+
+    public DbSet<RetailOutlet> RetailOutlets { get; set; }
 }
