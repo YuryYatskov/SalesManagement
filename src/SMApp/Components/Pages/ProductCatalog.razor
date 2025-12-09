@@ -12,15 +12,22 @@
     </SfToast>
 </div>
 
-<div class="row mt-1">
-    <div class="row mt-3">
-        <div class="col-12">
-            <SfComboBox CssClass="client-combo" DataSource="ClientData" TValue="int" TItem="ClientModel"
-                        @bind-Value="ClientId">
-                <ComboBoxFieldSettings Text="RetailOutletName" Value="Id"></ComboBoxFieldSettings>
-            </SfComboBox>
-        </div>
+<div class="row mt-3">
+    <div class="col-12">
+        <SfComboBox CssClass="client-combo" DataSource="ClientData" TValue="int" TItem="ClientModel"
+                    @bind-Value="ClientId">
+            <ComboBoxFieldSettings Text="RetailOutletName" Value="Id"></ComboBoxFieldSettings>
+        </SfComboBox>
     </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <SfTextBox CssClass="filter-text" Placeholder="Filter Products" Input="@OnInput"></SfTextBox>
+    </div>
+</div>
+
+<div class="row mt-1">
     <div class="col-12">
         <SfListView @ref="ProductsLV" ShowCheckBox="true" DataSource="ProductData" CssClass="e-list-template listview-template">
             <ListViewFieldSettings TValue="ProductModel" Id="Id" Text="Name"
@@ -42,12 +49,14 @@
             </ListViewTemplates>
         </SfListView>
     </div>
-    <div class="row mt-4">
-        <div class="col-6">
-            <SfButton class="btn btn-outline-dark" @onclick="() => (CreateOrder())">
-                Create Order
-            </SfButton>
-        </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-6">
+        <button class="btn btn-outline-dark" @onclick="() => (CreateOrder())">
+            Create Order
+        </button>
+
     </div>
 </div>
 
@@ -130,6 +139,7 @@
 
 @code {
     private List<ProductModel>? ProductData { get; set; }
+    private List<ProductModel>? ProductCollectionFilter;
     private List<ClientModel>? ClientData { get; set; }
     private int ClientId { get; set; } = 1;
     private SfListView<ProductModel>? ProductsLV { get; set; }
@@ -147,7 +157,20 @@
     protected override async Task OnInitializedAsync() 
     {
         ProductData = await ProductService.GetProducts();
+        ProductCollectionFilter = ProductData;
         ClientData = await ClientService.GetClients();
+    }
+
+    void OnInput(InputEventArgs eventArgs)
+    {
+        if (eventArgs.Value != "")
+        {
+            ProductData = ProductCollectionFilter?.FindAll(e => e.Name.ToLower().StartsWith(eventArgs.Value.ToLower()));
+        }
+        else
+        {
+            ProductData = ProductCollectionFilter;
+        }
     }
 
     public async Task CreateOrder()
