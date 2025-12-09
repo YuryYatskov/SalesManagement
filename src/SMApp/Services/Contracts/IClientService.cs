@@ -4,5 +4,5 @@ namespace SMApp.Services.Contracts;
 
 public interface IClientService
 {
-    Task<List<ClientModel>> GetCliants();
+    Task<List<ClientModel>> GetClients();
 }

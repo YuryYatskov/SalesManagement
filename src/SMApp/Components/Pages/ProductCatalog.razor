@@ -1,13 +1,16 @@
 ﻿@page "/product-catalog"
-@using SMApp.Models
-@using SMApp.Services.Contracts
-@using Syncfusion.Blazor.Lists
-@using System.Globalization
-@using Syncfusion.Blazor.DropDowns
-@inject IProductService ProductService;
-@inject IClientService ClientService;
+@rendermode InteractiveServer
+@inject IProductService ProductService
+@inject IClientService ClientService
+@inject IOrderService OrderService
 
 <h3>Product catalog</h3>
+
+<div class="col-lg-4 control-section">
+    <SfToast @ref="ToastObj" ID="toast_type">
+        <ToastPosition X="@ToastPosition"></ToastPosition>
+    </SfToast>
+</div>
 
 <div class="row mt-1">
     <div class="row mt-3">
@@ -19,7 +22,7 @@
         </div>
     </div>
     <div class="col-12">
-        <SfListView ShowCheckBox="true" DataSource="ProductData" CssClass="e-list-template listview-template">
+        <SfListView @ref="ProductsLV" ShowCheckBox="true" DataSource="ProductData" CssClass="e-list-template listview-template">
             <ListViewFieldSettings TValue="ProductModel" Id="Id" Text="Name"
                                    GroupBy="CategoryName"></ListViewFieldSettings>
             <ListViewTemplates TValue="ProductModel">
@@ -38,6 +41,13 @@
                 </GroupTemplate>
             </ListViewTemplates>
         </SfListView>
+    </div>
+    <div class="row mt-4">
+        <div class="col-6">
+            <SfButton class="btn btn-outline-dark" @onclick="() => (CreateOrder())">
+                Create Order
+            </SfButton>
+        </div>
     </div>
 </div>
 
@@ -122,10 +132,56 @@
     private List<ProductModel>? ProductData { get; set; }
     private List<ClientModel>? ClientData { get; set; }
     private int ClientId { get; set; } = 1;
+    private SfListView<ProductModel>? ProductsLV { get; set; }
+
+    private SfToast? ToastObj;
+    private string ToastPosition = "Right";
+    private List<ToastModel> Toast = new List<ToastModel>
+    {
+        new ToastModel{ Title = "Warning!", Content="There was a problem with your network connection.", CssClass="e-toast-warning", Icon="e-warning toast-icons" },
+        new ToastModel{ Title = "Success!", Content="Your order has been created successfully.", CssClass="e-toast-success", Icon="e-success toast-icons" },
+        new ToastModel{ Title = "Error!", Content="A problem occurred while creating your order.", CssClass="e-toast-danger", Icon="e-error toast-icons" },
+        new ToastModel{ Title = "Information!", Content="Please read the comments carefully.", CssClass="e-toast-info", Icon="e-info toast-icons" }
+    };
 
     protected override async Task OnInitializedAsync() 
     {
         ProductData = await ProductService.GetProducts();
-        ClientData = await ClientService.GetCliants();
+        ClientData = await ClientService.GetClients();
+    }
+
+    public async Task CreateOrder()
+    {
+        try
+        {
+            SelectedItems<ProductModel> productsOrdered = await ProductsLV!.GetCheckedItemsAsync();
+
+            if (productsOrdered.Data.Count() > 0)
+            {
+                List<OrderItem> orderItems = (from p in productsOrdered.Data
+                                              select new OrderItem
+                                              {
+                                                  ProductId = p.Id,
+                                                  Price = p.Price,
+                                                  Qty = 1
+                                              }).ToList();
+
+                OrderModel orderModel = new OrderModel
+                {
+                    ClientId = ClientId,
+                    OrderItems = orderItems
+                };
+
+                // int.Parse("");
+
+                await OrderService.CreateOrder(orderModel);
+                await ToastObj!.ShowAsync(Toast[1]);
+            }
+        }
+        catch (Exception)
+        {
+            await ToastObj!.ShowAsync(Toast[2]);
+            // throw;
+        }
     }
 }

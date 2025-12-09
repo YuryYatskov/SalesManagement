@@ -7,7 +7,7 @@ namespace SMApp.Services;
 
 public class ClientService(SalesManagementDbContext _dbContext) : IClientService
 {
-    public async Task<List<ClientModel>> GetCliants()
+    public async Task<List<ClientModel>> GetClients()
     {
         try
         {
