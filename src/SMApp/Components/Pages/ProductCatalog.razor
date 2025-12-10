@@ -52,11 +52,15 @@
 </div>
 
 <div class="row mt-4">
-    <div class="col-6">
+    <div class="col-2">
         <button class="btn btn-outline-dark" @onclick="() => (CreateOrder())">
             Create Order
         </button>
-
+    </div>
+    <div class="col-3">
+        <button class="btn btn-outline-dark" @onclick="() => (SalesOrderReport())">
+            Sales orders reports
+        </button>
     </div>
 </div>
 
@@ -206,5 +210,14 @@
             await ToastObj!.ShowAsync(Toast[2]);
             // throw;
         }
+    }
+
+    public async Task SalesOrderReport()
+    {
+        var salesOrderReport = await OrderService.SalesOrderReports();
+        if (salesOrderReport)
+            await ToastObj!.ShowAsync(Toast[1]);
+        else
+            await ToastObj!.ShowAsync(Toast[0]);
     }
 }

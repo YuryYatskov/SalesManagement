@@ -10,5 +10,5 @@ public class OrderModel
     public int Qty { get; set; }
     public int EmployeeId { get; set; }
     public int ClientId { get; set; }
-    public List<OrderItem> OrderItems { get; set; }
+    public List<OrderItem>? OrderItems { get; set; }
 }

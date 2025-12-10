@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SMApp.Data.Entities;
+using SMApp.Data.Entities.Reports;
 
 namespace SMApp.Data;
 
@@ -31,4 +32,6 @@ public class SalesManagementDbContext(DbContextOptions<SalesManagementDbContext>
     public DbSet<Order> Orders { get; set; }
 
     public DbSet<OrderItem> OrderItems { get; set; }
+
+    public DbSet<SalesOrderReport> SalesOrderReports { get; set; }
 }

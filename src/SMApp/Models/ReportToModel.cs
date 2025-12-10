@@ -1,4 +1,4 @@
-﻿namespace SMApp.Models.Reports;
+﻿namespace SMApp.Models;
 
 public class ReportToModel
 {

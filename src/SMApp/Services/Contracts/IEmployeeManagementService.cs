@@ -1,6 +1,5 @@
 ﻿using SMApp.Data.Entities;
 using SMApp.Models;
-using SMApp.Models.Reports;
 
 namespace SMApp.Services.Contracts;
 

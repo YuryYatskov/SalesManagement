@@ -3,7 +3,6 @@ using SMApp.Data;
 using SMApp.Data.Entities;
 using SMApp.Extensions;
 using SMApp.Models;
-using SMApp.Models.Reports;
 using SMApp.Services.Contracts;
 using System.Reflection;
 
