@@ -9,7 +9,7 @@
         <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.Category">
         </ChartPrimaryXAxis>
         <ChartSeriesCollection>
-            <ChartSeries DataSource="@GroupedFieldPriceData"
+            <ChartSeries DataSource="@GrossSalesPricePerMonthData"
                          XName="GroupedFieldKey"
                          YName="Price"
             Type="ChartSeriesType.Bar"></ChartSeries>
@@ -23,7 +23,7 @@
         <AccumulationChartLegendSettings  Visible="true" Position="LegendPosition.Top"></AccumulationChartLegendSettings>
         <AccumulationChartTooltipSettings Enable="true"></AccumulationChartTooltipSettings>
         <AccumulationChartSeriesCollection>
-            <AccumulationChartSeries DataSource="@GroupedFieldQtyData"
+            <AccumulationChartSeries DataSource="@QtyPerProductCatData"
                 XName="GroupedFieldKey"
                 YName="Qty"
                 Radius="70%" InnerRadius="40%"
@@ -37,13 +37,28 @@
     </SfAccumulationChart>
 </div>
 
+<div class="mt-3">
+    <SfChart Title="Qty / Month">
+        <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.Category">
+        </ChartPrimaryXAxis>
+        <ChartSeriesCollection>
+            <ChartSeries DataSource="@QtyPerMonthData" XName="GroupedFieldKey"
+                         YName="Qty" Type="ChartSeriesType.Line">
+
+            </ChartSeries>
+        </ChartSeriesCollection>
+    </SfChart>
+</div>
+
 @code {
-    List<GroupedFieldPriceModel>? GroupedFieldPriceData { get; set; }
-    List<GroupedFieldQtyModel>? GroupedFieldQtyData { get; set; }
+    List<GroupedFieldPriceModel>? GrossSalesPricePerMonthData { get; set; }
+    List<GroupedFieldQtyModel>? QtyPerProductCatData { get; set; }
+    List<GroupedFieldQtyModel>? QtyPerMonthData { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        GroupedFieldPriceData = await SalesOrderReportService.GetEmployeePricePerMonthData();
-        GroupedFieldQtyData = await SalesOrderReportService.GetQtyPerProductCategory();
+        GrossSalesPricePerMonthData = await SalesOrderReportService.GetEmployeePricePerMonthData();
+        QtyPerProductCatData = await SalesOrderReportService.GetQtyPerProductCategory();
+        QtyPerMonthData = await SalesOrderReportService.GetQtyPerMonthData();
     }
 }
