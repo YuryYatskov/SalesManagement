@@ -34,4 +34,6 @@ public class SalesManagementDbContext(DbContextOptions<SalesManagementDbContext>
     public DbSet<OrderItem> OrderItems { get; set; }
 
     public DbSet<SalesOrderReport> SalesOrderReports { get; set; }
+
+    public DbSet<Appointment> Appointments { get; set; }
 }
