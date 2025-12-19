@@ -1,5 +1,6 @@
 ﻿@page "/appointments"
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "SM,TL,SR")]
 @using Syncfusion.Blazor.Schedule
 @inject IAppointmentService AppointmentService
 

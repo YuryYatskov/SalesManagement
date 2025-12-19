@@ -1,4 +1,5 @@
-﻿using SMApp.Data;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using SMApp.Data;
 using SMApp.Data.Entities;
 using SMApp.Extensions;
 using SMApp.Models;
@@ -6,7 +7,8 @@ using SMApp.Services.Contracts;
 
 namespace SMApp.Services;
 
-public class AppointmentService(SalesManagementDbContext _dbContext) : IAppointmentService
+public class AppointmentService(SalesManagementDbContext _dbContext,
+    AuthenticationStateProvider _authenticationStateProvider) : IAppointmentService
 {
     public async Task<List<AppointmentModel>> GetAppointments()
     {
@@ -92,6 +94,9 @@ public class AppointmentService(SalesManagementDbContext _dbContext) : IAppointm
 
     private async Task<Employee> GetLoggedOnEmployee()
     {
-        return await Task.Run(() => new Employee { Id = 9 });
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        return await user.GetEmployeeObject(_dbContext);
     }
 }

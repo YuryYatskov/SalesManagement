@@ -132,4 +132,19 @@ public static class Conversions
             Subject = appointmentModel.Subject
         };
     }
+
+    public static async Task<Employee> GetEmployeeObject(
+        this System.Security.Claims.ClaimsPrincipal user,
+        SalesManagementDbContext context)
+    {
+        var emailAddress = user?.Identity?.Name;
+        if (emailAddress is null)
+            return new Employee();
+
+        var employee = await context.Employees.Where(e => e.Email.ToLower() == emailAddress.ToLower()).SingleOrDefaultAsync();
+        if (employee is null)
+            return new Employee();
+
+        return employee;
+    }
 }

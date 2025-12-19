@@ -1,12 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.EntityFrameworkCore;
 using SMApp.Data;
 using SMApp.Data.Entities;
+using SMApp.Extensions;
 using SMApp.Models.ReportModels;
 using SMApp.Services.Contracts;
 
 namespace SMApp.Services;
 
-public class SalesOrderReportService(SalesManagementDbContext _dbContext) : ISalesOrderReportService
+public class SalesOrderReportService(SalesManagementDbContext _dbContext,
+    AuthenticationStateProvider _authenticationStateProvider) : ISalesOrderReportService
 {
     //SR
 
@@ -131,7 +134,7 @@ public class SalesOrderReportService(SalesManagementDbContext _dbContext) : ISal
         {
             var employee = await GetLoggedOnEmployee();
 
-            List<int> teamMemberIds = await GetTeamMemberIds(3); // employee.Id);
+            List<int> teamMemberIds = await GetTeamMemberIds(employee.Id);
 
             var reportData = await (from s in _dbContext.SalesOrderReports
                                     where teamMemberIds.Contains(s.EmployeeId)
@@ -157,7 +160,7 @@ public class SalesOrderReportService(SalesManagementDbContext _dbContext) : ISal
         {
             var employee = await GetLoggedOnEmployee();
 
-            List<int> teamMemberIds = await GetTeamMemberIds(3); // employee.Id);
+            List<int> teamMemberIds = await GetTeamMemberIds(employee.Id);
             var reportData = await (from s in _dbContext.SalesOrderReports
                                     where teamMemberIds.Contains(s.EmployeeId)
                                     group s by s.EmployeeFirstName into GroupedData
@@ -183,7 +186,7 @@ public class SalesOrderReportService(SalesManagementDbContext _dbContext) : ISal
         {
             var employee = await GetLoggedOnEmployee();
 
-            List<int> teamMemberIds = await GetTeamMemberIds(3); // employee.Id);
+            List<int> teamMemberIds = await GetTeamMemberIds(employee.Id);
 
             var reportData = await (from s in _dbContext.SalesOrderReports
                                     where teamMemberIds.Contains(s.EmployeeId) && s.OrderDateTime.Year == DateTime.Now.Year
@@ -305,6 +308,7 @@ public class SalesOrderReportService(SalesManagementDbContext _dbContext) : ISal
             throw;
         }
     }
+
     private async Task<List<int>> GetTeamMemberIds(int teamLeadId)
     {
         List<int> teamMemberIds = await _dbContext.Employees
@@ -314,8 +318,11 @@ public class SalesOrderReportService(SalesManagementDbContext _dbContext) : ISal
 
     }
 
-    private Task<Employee> GetLoggedOnEmployee()
+    private async Task<Employee> GetLoggedOnEmployee()
     {
-        return Task.Run(() => new Employee { Id = 9 });
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        return await user.GetEmployeeObject(_dbContext);
     }
 }

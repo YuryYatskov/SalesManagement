@@ -1,13 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.EntityFrameworkCore;
 using SMApp.Data;
 using SMApp.Data.Entities;
 using SMApp.Data.Entities.Reports;
+using SMApp.Extensions;
 using SMApp.Models;
 using SMApp.Services.Contracts;
 
 namespace SMApp.Services;
 
-public class OrderService(SalesManagementDbContext _dbContext) : IOrderService
+public class OrderService(SalesManagementDbContext _dbContext,
+    AuthenticationStateProvider _authenticationStateProvider) : IOrderService
 {
     public async Task CreateOrder(OrderModel orderModel)
     {
@@ -15,11 +18,13 @@ public class OrderService(SalesManagementDbContext _dbContext) : IOrderService
         {
             try
             {
+                var employee = await GetLoggedOnEmployee();
+
                 Order order = new()
                 {
                     OrderDateTime = DateTime.Now,
                     ClientId = orderModel.ClientId,
-                    EmployeeId = 9,
+                    EmployeeId = employee.Id,
                     Price = orderModel.OrderItems!.Sum(o => o.Price),
                     Qty = orderModel.OrderItems!.Sum(o => o.Qty)
                 };
@@ -115,5 +120,13 @@ public class OrderService(SalesManagementDbContext _dbContext) : IOrderService
         }
 
         return task;
+    }
+
+    private async Task<Employee> GetLoggedOnEmployee()
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        return await user.GetEmployeeObject(_dbContext);
     }
 }

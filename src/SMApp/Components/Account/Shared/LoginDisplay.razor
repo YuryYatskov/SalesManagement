@@ -1,0 +1,18 @@
+﻿@inject TokenProvider TokenProvider
+<AuthorizeView>
+    <Authorized>
+        <a class="nav nav-link" href="Account/Manage/Index">
+            Hello, @context.User?.Identity?.Name!
+        </a>
+        <form action="/Account/Logout?returnUrl=%2f" method="post">
+            <button class="btn btn-outline-info">Logout</button>
+            <input name="__RequestVerificationToken" type="hidden"
+                value="@TokenProvider.XsrfToken"/>
+        </form>
+    </Authorized>
+    <NotAuthorized>
+        <a class="btn btn-outline-dark" href="Account/Register">Register</a>
+        <a class="btn btn-outline-dark" href="Account/Login">Login</a>
+    </NotAuthorized>
+</AuthorizeView>
+

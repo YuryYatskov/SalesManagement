@@ -1,6 +1,8 @@
 ﻿@page "/employee-managment"
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin, SM")]
 @inject IEmployeeManagementService EmployeeManagementService
+@inject IHttpContextAccessor HttpContextAccessor
 
 <h3>Employee management</h3>
 
@@ -172,6 +174,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var token = HttpContextAccessor.HttpContext?.Items["XsrfToken"]?.ToString();
+
         VisibleProp = true;
         employeeData = await EmployeeManagementService.GetEmployees();
         employeeJobTitleData = await EmployeeManagementService.GetJobTitles();

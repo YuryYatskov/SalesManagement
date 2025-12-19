@@ -1,5 +1,6 @@
 ﻿@page "/product-catalog"
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "SR")]
 @inject IProductService ProductService
 @inject IClientService ClientService
 @inject IOrderService OrderService

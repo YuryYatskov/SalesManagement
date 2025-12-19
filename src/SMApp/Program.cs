@@ -1,5 +1,9 @@
+﻿using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SMApp.Components;
+using SMApp.Components.Account;
 using SMApp.Data;
 using SMApp.Services;
 using SMApp.Services.Contracts;
@@ -26,6 +30,31 @@ builder.Services.AddScoped<ISalesOrderReportService, SalesOrderReportService>();
 builder.Services.AddScoped<IOrganisationService, OrganisationService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
+builder.Services.AddScoped<TokenProvider>();
+
+builder.Services.AddCascadingAuthenticationState();
+
+builder.Services.AddScoped<IdentityUserAccessor>();
+
+builder.Services.AddScoped<IdentityRedirectManager>();
+
+builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = IdentityConstants.ApplicationScheme;
+        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+    })
+    .AddIdentityCookies();
+
+builder.Services.AddIdentityCore<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<SalesManagementDbContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddSingleton<IEmailSender<IdentityUser>, IdentityNoOpEmailSender>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -44,7 +73,22 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.Use(async (context, next) =>
+{
+    var antiforgery = context.RequestServices.GetRequiredService<IAntiforgery>();
+    var tokens = antiforgery.GetAndStoreTokens(context);
+
+    context.Items["XsrfToken"] = tokens.RequestToken;
+
+    await next();
+});
+
+app.MapAdditionalIdentityEndpoints();
 
 app.Run();

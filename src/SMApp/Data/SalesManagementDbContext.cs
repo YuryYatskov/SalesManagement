@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SMApp.Data.Entities;
 using SMApp.Data.Entities.Reports;
 
 namespace SMApp.Data;
 
-public class SalesManagementDbContext(DbContextOptions<SalesManagementDbContext> options) : DbContext(options)
+public class SalesManagementDbContext(DbContextOptions<SalesManagementDbContext> options) : IdentityDbContext<IdentityUser>(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

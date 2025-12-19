@@ -1,5 +1,6 @@
 ﻿@page "/sm-dashboard"
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "SM")]
 @using Syncfusion.Blazor.Charts
 @using Syncfusion.Blazor
 @using Syncfusion.Blazor.Layouts

@@ -1,6 +1,8 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@implements IDisposable
+@inject NavigationManager NavigationManager
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">SMApp</a>
+        <a class="navbar-brand" href=""><img src="/Images/Oexl.png" style="height:40px" class="img-fluid" />Outdoor Excellence</a>
     </div>
 </div>
 
@@ -8,56 +10,84 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="sr-dashboard">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Dashboard
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="tl-dashboard">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Dashboard
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="sm-dashboard">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Dashboard
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
+        <div class="nav-item px-3 d-sm-none">
+            <LoginDisplay />
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
+        <AuthorizeView Roles="SR">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="sr-dashboard">
+                    <span class="bi fa fa-pie-chart" aria-hidden="true"></span> Dashboard
+                </NavLink>
+            </div>
+        </AuthorizeView>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="employee-managment">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Employee management
-            </NavLink>
-        </div>
+        <AuthorizeView Roles="TL">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="tl-dashboard">
+                    <span class="bi fa fa-pie-chart" aria-hidden="true"></span> Dashboard
+                </NavLink>
+            </div>
+        </AuthorizeView>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="product-catalog">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Products
-            </NavLink>
-        </div>
+        <AuthorizeView Roles="SM">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="sm-dashboard">
+                    <span class="bi fa fa-pie-chart" aria-hidden="true"></span> Dashboard
+                </NavLink>
+            </div>
+        </AuthorizeView>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="organisation">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Organisation
-            </NavLink>
-        </div>
+        <AuthorizeView Roles="Admin, SM">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="employee-managment">
+                    <span class="bi fa fa-users" aria-hidden="true"></span> Employees
+                </NavLink>
+            </div>
+        </AuthorizeView>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="appointments">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Appointments
-            </NavLink>
-        </div>
+        <AuthorizeView Roles="SR">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="product-catalog">
+                    <span class="bi fa-solid fa-bomb" aria-hidden="true"></span> Products
+                </NavLink>
+            </div>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="SM">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="organisation">
+                    <span class="bi fa fa-sitemap" aria-hidden="true"></span> Organisation
+                </NavLink>
+            </div>
+        </AuthorizeView>
+        <AuthorizeView Roles="SM, TL, SR">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="appointments">
+                    <span class="bi fa fa-calendar" aria-hidden="true"></span> Appointments
+                </NavLink>
+            </div>
+        </AuthorizeView>
     </nav>
 </div>
 
+@code {
+    private string? currentUrl;
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+}
